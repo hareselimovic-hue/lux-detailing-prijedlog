@@ -105,6 +105,34 @@ nav.scrolled{background:rgba(10,11,13,.94);box-shadow:0 1px 0 var(--line)}
 @keyframes mq{to{transform:translateX(-50%)}}
 
 section{position:relative;padding:120px 0;overflow:hidden}
+
+/* animirana pozadina ispod hero sekcije (samo transform/opacity, bez blur filtera) */
+.bgfx{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bgfx .glow{position:absolute;border-radius:50%;will-change:transform}
+.bgfx .g1{width:70vmax;height:70vmax;left:-25vmax;top:-10vmax;background:radial-gradient(circle,rgba(255,42,60,.13),transparent 62%);animation:drift1 24s ease-in-out infinite}
+.bgfx .g2{width:60vmax;height:60vmax;right:-25vmax;bottom:-20vmax;background:radial-gradient(circle,rgba(255,42,60,.10),transparent 62%);animation:drift2 30s ease-in-out infinite}
+.bgfx .g3{width:40vmax;height:40vmax;left:40%;top:30%;background:radial-gradient(circle,rgba(255,255,255,.035),transparent 62%);animation:drift3 20s ease-in-out infinite}
+@keyframes drift1{50%{transform:translate(30vw,35vh) scale(1.15)}}
+@keyframes drift2{50%{transform:translate(-35vw,-30vh) scale(.9)}}
+@keyframes drift3{33%{transform:translate(-25vw,15vh)}66%{transform:translate(15vw,-20vh) scale(1.2)}}
+.bgfx .carbon{position:absolute;inset:-80px;opacity:.5;background-image:
+  linear-gradient(45deg,rgba(255,255,255,.025) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.025) 75%),
+  linear-gradient(45deg,rgba(255,255,255,.025) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.025) 75%);
+  background-size:16px 16px;background-position:0 0,8px 8px;animation:carbon 18s linear infinite;
+  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,#000,transparent);mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,#000,transparent)}
+@keyframes carbon{to{transform:translate(64px,64px)}}
+.bgfx .ln{position:absolute;height:1px;width:40vw;background:linear-gradient(90deg,transparent,rgba(255,42,60,.7),transparent);opacity:0;animation:ln 9s linear infinite}
+.bgfx .ln:nth-of-type(1){top:18%;animation-delay:0s}
+.bgfx .ln:nth-of-type(2){top:46%;animation-delay:3s;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent)}
+.bgfx .ln:nth-of-type(3){top:74%;animation-delay:6s}
+.bgfx .ln:nth-of-type(4){top:60%;animation-delay:4.5s;width:25vw;animation-duration:7s}
+@keyframes ln{0%{transform:translateX(-45vw);opacity:0}8%{opacity:1}35%{transform:translateX(110vw);opacity:0}100%{transform:translateX(110vw);opacity:0}}
+.bgfx .bub{position:absolute;bottom:-40px;border-radius:50%;border:1px solid rgba(255,255,255,.14);animation:rise linear infinite}
+.bgfx .bub::after{content:"";position:absolute;width:25%;height:25%;left:22%;top:22%;border-radius:50%;background:rgba(255,255,255,.3)}
+@keyframes rise{0%{transform:translate(0,0);opacity:0}10%{opacity:1}50%{transform:translate(20px,-55vh)}90%{opacity:.8}100%{transform:translate(-10px,-115vh);opacity:0}}
+main{position:relative;z-index:1}
+.hero{z-index:1}
+.ba-sec,.contact{background:rgba(18,20,24,.55)!important}
 .head{max-width:640px;margin-bottom:60px}
 .head.c{text-align:center;margin-left:auto;margin-right:auto}
 .head h2{font-size:clamp(38px,5vw,64px);margin-top:4px}
@@ -283,6 +311,13 @@ footer{padding:36px 0;border-top:1px solid var(--line);color:var(--muted);font-s
   <div class="scroll-hint" aria-hidden="true"></div>
 </header>
 
+<div class="bgfx" id="bgfx" aria-hidden="true">
+  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+  <div class="carbon"></div>
+  <i class="ln"></i><i class="ln"></i><i class="ln"></i><i class="ln"></i>
+</div>
+
+<main>
 <div class="marquee" aria-hidden="true">
   <div class="mq">
     <span>Poliranje</span><span>Keramička zaštita</span><span>Poliranje farova</span><span>Uklanjanje ogrebotina</span><span>Dubinsko čišćenje</span>
@@ -407,7 +442,9 @@ footer{padding:36px 0;border-top:1px solid var(--line);color:var(--muted);font-s
   </div>
 </section>
 
-<footer>
+</main>
+
+<footer style="position:relative;z-index:1;background:var(--bg)">
   <div class="wrap foot">
     <span>&copy; <span id="y"></span> Lux Auto Detailing Centar · Sarajevo</span>
     <span>Semira Frašte 12 · 061 020 843</span>
@@ -470,6 +507,17 @@ new IntersectionObserver((es, o) => es.forEach(e => {
   badge.classList.add(open ? 'on' : 'off');
   badge.querySelector('span').textContent = open ? 'Otvoreno sada · do 19:00' : 'Trenutno zatvoreno';
   const row = document.querySelector(`#hours tr[data-d="${d}"]`); if (row) row.classList.add('today');
+})();
+
+// CSS mjehurići u pozadini donjih sekcija
+(function(){
+  const box = document.getElementById('bgfx'), n = innerWidth < 700 ? 8 : 16;
+  for (let i = 0; i < n; i++){
+    const b = document.createElement('span'), s = 6 + Math.random()*22;
+    b.className = 'bub';
+    b.style.cssText = `left:${Math.random()*100}%;width:${s}px;height:${s}px;animation-duration:${14+Math.random()*16}s;animation-delay:${-Math.random()*30}s`;
+    box.appendChild(b);
+  }
 })();
 
 // mjehurići pjene u hero sekciji (lagano: ~35 krugova, pauza kad se ne vidi)
